@@ -1,5 +1,6 @@
 package com.ramis.progresstracker.service;
 
+import com.ramis.progresstracker.controller.GoalController;
 import com.ramis.progresstracker.dto.GoalDTO;
 import com.ramis.progresstracker.entity.Goal;
 import com.ramis.progresstracker.entity.User;
@@ -67,5 +68,33 @@ public class GoalService {
             dto.setDeadline(goal.getDeadline().toString());
         }
         return dto;
+    }
+
+    public GoalDTO updateGoal(Long goalId, GoalController.UpdateGoalRequest request) {
+        Goal goal = goalRepository.findById(goalId)
+                .orElseThrow(() -> new IllegalArgumentException("Goal not found"));
+
+        // Обновляем только те поля, которые реально пришли в запросе
+        if (request.getTitle() != null && !request.getTitle().isBlank()) {
+            goal.setTitle(request.getTitle());
+        }
+
+        if (request.getDescription() != null) {
+            goal.setDescription(request.getDescription());
+        }
+
+        if (request.getCurrentXP() != null) {
+            goal.setCurrentXP(request.getCurrentXP());
+            // Опционально: если достигнут target, помечаем как COMPLETED
+            if (goal.getCurrentXP() >= goal.getXpTarget()) {
+                goal.setStatus(Goal.GoalStatus.COMPLETED);
+            }
+        }
+
+        Goal saved = goalRepository.save(goal);
+        log.info("Goal updated: {} (title={}, currentXP={})",
+                goalId, saved.getTitle(), saved.getCurrentXP());
+
+        return convertToDTO(saved);
     }
 }
