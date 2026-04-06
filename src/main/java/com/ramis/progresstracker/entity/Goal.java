@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Formula;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,6 +34,10 @@ public class Goal {
 
     @Column(name = "current_xp")
     private Integer currentXP = 0;
+
+    @Column(name = "progress_percentage", insertable = false, updatable = false)
+    @Formula("(CASE WHEN currentxp IS NULL OR xptarget IS NULL THEN 0.0 ELSE currentxp/100.0/xptarget END)")
+    private Double progressPercentage;
 
     @Enumerated(EnumType.STRING)
     private GoalStatus status = GoalStatus.ACTIVE;

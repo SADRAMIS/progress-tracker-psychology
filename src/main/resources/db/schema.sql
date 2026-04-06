@@ -2,7 +2,23 @@
 -- Схема базы данных для PostgreSQL
 -- =====================================================
 
--- Создание ENUM типов (вместо ENUM в таблицах)
+-- Удаляем типы (если существуют) + пересоздаём
+DROP TYPE IF EXISTS goal_status CASCADE;
+DROP TYPE IF EXISTS question_difficulty CASCADE;
+DROP TYPE IF EXISTS recommendation_type CASCADE;
+DROP TYPE IF EXISTS priority_level CASCADE;
+
+-- DROP таблиц (CASCADE удалит FK)
+DROP TABLE IF EXISTS recommendations CASCADE;
+DROP TABLE IF EXISTS error_patterns CASCADE;
+DROP TABLE IF EXISTS progress_records CASCADE;
+DROP TABLE IF EXISTS psychometric_scores CASCADE;
+DROP TABLE IF EXISTS answers CASCADE;
+DROP TABLE IF EXISTS questions CASCADE;
+DROP TABLE IF EXISTS goals CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+-- Создание ENUM типов
 CREATE TYPE goal_status AS ENUM ('ACTIVE', 'COMPLETED', 'ABANDONED');
 CREATE TYPE question_difficulty AS ENUM ('EASY', 'MEDIUM', 'HARD');
 CREATE TYPE recommendation_type AS ENUM ('MOTIVATION', 'FOCUS', 'CONSISTENCY', 'LEARNING_PATH');

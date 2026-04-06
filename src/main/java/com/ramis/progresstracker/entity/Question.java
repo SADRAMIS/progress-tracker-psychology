@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,7 +32,9 @@ public class Question {
     private String category; // BASIC_JAVA, SPRING_BOOT, PATTERNS, SQL, etc.
 
     @Enumerated(EnumType.STRING)
-    private Difficulty difficulty = Difficulty.MEDIUM;
+    @Column(name = "difficulty", columnDefinition = "question_difficulty")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private Difficulty difficulty;
 
     @Column(name = "xp_value", nullable = false)
     private Integer xpValue;
