@@ -59,6 +59,7 @@ CREATE TABLE questions (
     difficulty question_difficulty NOT NULL,
     xp_value INT NOT NULL,
     theory_content TEXT,
+    answer_content TEXT,
     code_example TEXT,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

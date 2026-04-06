@@ -76,7 +76,7 @@ public class QuestionImportService {
         return isStart;
     }
 
-    private void saveQuestionBlock(List<String> blockLines, int questionNumber) {
+    /*private void saveQuestionBlock(List<String> blockLines, int questionNumber) {
         Question q = new Question();
         q.setQuestionNumber(questionNumber);
 
@@ -100,6 +100,64 @@ public class QuestionImportService {
 
         questionRepository.save(q);
         log.info("💾 Saved question #{}: {}", questionNumber, q.getTitle());
+    }*/
+
+    private void saveQuestionBlock(List<String> blockLines, int questionNumber) {
+        Question q = new Question();
+        q.setQuestionNumber(questionNumber);
+
+        // 1. Title: первая строка без "[1)]()"
+        String rawTitle = blockLines.get(0);
+        q.setTitle(extractTitle(rawTitle));
+
+        // 2.  Парсим answer / example / theory
+        int answerIdx = -1, exampleIdx = -1;
+        for (int i = 1; i < blockLines.size(); i++) {
+            String line = blockLines.get(i);
+            if (line.contains("Ответ:")) answerIdx = i;
+            if (line.contains("Пример:")) exampleIdx = i;
+        }
+
+        StringBuilder theory = new StringBuilder();
+        StringBuilder answer = new StringBuilder();
+        StringBuilder code = new StringBuilder();
+
+        // theory: до "Ответ:"
+        if (answerIdx > 0) {
+            for (int i = 1; i < answerIdx; i++) {
+                theory.append(blockLines.get(i)).append("\n");
+            }
+        }
+
+        // answer: между "Ответ:" и "Пример:"
+        if (answerIdx > 0) {
+            int endAnswer = (exampleIdx > 0 ? exampleIdx : blockLines.size());
+            for (int i = answerIdx + 1; i < endAnswer; i++) {
+                answer.append(blockLines.get(i)).append("\n");
+            }
+        }
+
+        // code: после "Пример:"
+        if (exampleIdx > 0) {
+            for (int i = exampleIdx + 1; i < blockLines.size(); i++) {
+                code.append(blockLines.get(i)).append("\n");
+            }
+        }
+
+        q.setTheoryContent(theory.toString().trim().isEmpty() ? null : theory.toString().trim());
+        q.setAnswerContent(answer.toString().trim().isEmpty() ? null : answer.toString().trim());
+        q.setCodeExample(code.toString().trim().isEmpty() ? null : code.toString().trim());
+
+        q.setCategory("BASICJAVA");
+        q.setDifficulty(Question.Difficulty.EASY);
+        q.setXpValue(100);
+
+        questionRepository.save(q);
+        log.info("💾 Q#{}: title={}, answer={}, code={}",
+                questionNumber,
+                q.getTitle().substring(0, Math.min(50, q.getTitle().length())),
+                q.getAnswerContent() != null ? "✓" : "✗",
+                q.getCodeExample() != null ? "✓" : "✗");
     }
 
     private String extractTitle(String rawLine) {
@@ -108,10 +166,9 @@ public class QuestionImportService {
         return trimmed.replaceFirst("^\\[[0-9]+\\)\\]\\(\\)\\s*", "");
     }
 
-    // Сейчас этот метод не нужен, но оставим на будущее
     private int findLineIndex(List<String> lines, String marker) {
         for (int i = 0; i < lines.size(); i++) {
-            if (lines.get(i).trim().equalsIgnoreCase(marker)) {
+            if (lines.get(i).contains(marker)) {
                 return i;
             }
         }

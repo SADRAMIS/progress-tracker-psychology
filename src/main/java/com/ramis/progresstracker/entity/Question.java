@@ -42,6 +42,9 @@ public class Question {
     @Column(name = "theory_content", columnDefinition = "LONGTEXT")
     private String theoryContent;
 
+    @Column(name = "answer_content", columnDefinition = "TEXT")
+    private String answerContent;
+
     @Column(name = "code_example", columnDefinition = "LONGTEXT")
     private String codeExample;
 
