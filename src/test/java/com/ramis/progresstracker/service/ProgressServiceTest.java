@@ -1,6 +1,6 @@
 package com.ramis.progresstracker.service;
 
-import com.ramis.progresstracker.dto.QuestionAnswerDTO;
+import com.ramis.progresstracker.dto.FullAnswerDTO;
 import com.ramis.progresstracker.entity.User;
 import com.ramis.progresstracker.repository.QuestionRepository;
 import com.ramis.progresstracker.repository.UserRepository;
@@ -48,7 +48,7 @@ public class ProgressServiceTest {
     @Test
     void testSubmitAnswer_Level3_ReturnsCorrectXP() {
         // Arrange
-        QuestionAnswerDTO dto = new QuestionAnswerDTO();
+        FullAnswerDTO dto = new FullAnswerDTO();
         dto.setUserId(testUserId);
         dto.setQuestionId(testQuestionId);  // ID=1 из БД
         dto.setLevelCompleted(3);
@@ -66,7 +66,7 @@ public class ProgressServiceTest {
 
     @Test
     void testSubmitAnswer_Level1_ReturnsBaseXP() {
-        QuestionAnswerDTO dto = new QuestionAnswerDTO();
+        FullAnswerDTO dto = new FullAnswerDTO();
         dto.setUserId(testUserId);
         dto.setQuestionId(testQuestionId);
         dto.setLevelCompleted(1);

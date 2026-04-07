@@ -2,7 +2,7 @@ package com.ramis.progresstracker.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ramis.progresstracker.dto.ProgressDTO;
-import com.ramis.progresstracker.dto.QuestionAnswerDTO;
+import com.ramis.progresstracker.dto.FullAnswerDTO;
 import com.ramis.progresstracker.service.ProgressService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -104,7 +104,7 @@ class ProgressControllerTest {
     @Test
     @WithMockUser(roles = {"USER"})  //  Добавили мок-пользователя
     void submitAnswer_ReturnsXpGained() throws Exception {
-        QuestionAnswerDTO dto = new QuestionAnswerDTO();
+        FullAnswerDTO dto = new FullAnswerDTO();
         dto.setQuestionId(1L);
         dto.setLevelCompleted(3);
         dto.setAttempts(2);

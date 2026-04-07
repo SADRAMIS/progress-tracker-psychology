@@ -1,7 +1,8 @@
 package com.ramis.progresstracker.controller;
 
 import com.ramis.progresstracker.dto.ProgressDTO;
-import com.ramis.progresstracker.dto.QuestionAnswerDTO;
+import com.ramis.progresstracker.dto.FullAnswerDTO;
+import com.ramis.progresstracker.dto.SubmitAnswerRequest;
 import com.ramis.progresstracker.service.ProgressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -47,9 +48,20 @@ public class ProgressController {
      * Отправить ответ на вопрос
      * POST /api/progress/submit-answer
      */
+    // Полный ответ (со временем, заметками)
     @PostMapping("/submit-answer")
-    public ResponseEntity<?> submitAnswer(@RequestBody QuestionAnswerDTO answerDTO) {
+    public ResponseEntity<?> submitAnswer(@RequestBody FullAnswerDTO answerDTO) {
         int xpGained = progressService.submitAnswer(answerDTO);
+        return ResponseEntity.ok().body(Map.of("xpGained", xpGained));
+    }
+
+    // Простой быстрый ответ (только isCorrect)
+    @PostMapping("/submit-simple")
+    public ResponseEntity<?> submitAnswer(@RequestBody SubmitAnswerRequest request) {
+        int xpGained = progressService.submitSimpleAnswer(
+                request.userId(),
+                request.questionId(),
+                request.isCorrect());
         return ResponseEntity.ok().body(Map.of("xpGained", xpGained));
     }
 

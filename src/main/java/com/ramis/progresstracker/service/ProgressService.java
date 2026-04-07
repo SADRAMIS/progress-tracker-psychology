@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -28,7 +29,7 @@ public class ProgressService {
     /**
      * Отправить ответ на вопрос и обновить прогресс
      */
-    public int submitAnswer(QuestionAnswerDTO dto) {
+    public int submitAnswer(FullAnswerDTO dto) {
         // Получи user и question
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -62,6 +63,45 @@ public class ProgressService {
         updateDailyProgress(user, xpGained, dto.getTimeSpentMinutes());
 
         log.info("Answer submitted: user={}, question={}, xp={}", user.getId(), question.getId(), xpGained);
+        return xpGained;
+    }
+
+    /**
+     * Простая отправка ответа (только isCorrect) для быстрого теста
+     */
+    public int submitSimpleAnswer(Long userId, Long questionId, boolean isCorrect) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new IllegalArgumentException("Question not found: " + questionId));
+
+        // Создай или обнови Answer (упрощённо)
+        Answer answer = answerRepository.findByUserIdAndQuestionId(userId, questionId)
+                .orElse(new Answer());
+
+        answer.setUser(user);
+        answer.setQuestion(question);
+        answer.setIsCorrect(isCorrect);
+        answer.setAttempts(answer.getAttempts() == null ? 1 : answer.getAttempts() + 1);
+        answer.setLevelCompleted(isCorrect ? 3 : 0); // Успех = level 3
+        answer.setCreatedDate(LocalDateTime.now());
+
+        Answer savedAnswer = answerRepository.save(answer);
+
+        // XP (твоя логика)
+        int xpGained = calculateXPGained(savedAnswer);
+
+        // Обнови user и progress (твоя логика)
+        user.setTotalXP(user.getTotalXP() + xpGained);
+        user.setLevel(user.calculateLevel());
+        userRepository.save(user);
+
+        updateDailyProgress(user, xpGained, 0); // 0 минут для простоты
+
+        log.info("Simple answer: user={}, question={}, correct={}, xp={}",
+                userId, questionId, isCorrect, xpGained);
+
         return xpGained;
     }
 
