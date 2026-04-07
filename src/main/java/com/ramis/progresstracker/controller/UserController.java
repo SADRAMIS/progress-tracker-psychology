@@ -1,5 +1,7 @@
 package com.ramis.progresstracker.controller;
 
+import com.ramis.progresstracker.dto.CreateUserRequest;
+import com.ramis.progresstracker.dto.UpdateUserRequest;
 import com.ramis.progresstracker.dto.UserDTO;
 import com.ramis.progresstracker.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ public class UserController {
      */
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody CreateUserRequest request) {
-        UserDTO user = userService.createUser(request.getEmail(), request.getName());
+        UserDTO user = userService.createUser(request.email(), request.name());
         return ResponseEntity.ok(user);
     }
 
@@ -52,27 +54,7 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUser(
             @PathVariable Long userId,
             @RequestBody UpdateUserRequest request) {
-        UserDTO user = userService.updateUser(userId, request.getName());
+        UserDTO user = userService.updateUser(userId, request.name());
         return ResponseEntity.ok(user);
     }
-
-    // Request/Response классы
-    public static class CreateUserRequest {
-        private String email;
-        private String name;
-
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
-
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
-    }
-
-    public static class UpdateUserRequest {
-        private String name;
-
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
-    }
-
 }
