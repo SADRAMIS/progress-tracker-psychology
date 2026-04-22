@@ -43,6 +43,18 @@ public class Answer {
     @Column(name = "created_date", updatable = false)
     private LocalDateTime createdDate = LocalDateTime.now();
 
+    // текст ответа пользователя
+    @Column(name = "user_answer_text", columnDefinition = "TEXT")
+    private String userAnswerText;
+
+    // оценка 0–100
+    @Column(name = "ai_score")
+    private Integer aiScore;
+
+    // фидбек по ответу
+    @Column(name = "ai_feedback", columnDefinition = "TEXT")
+    private String aiFeedback;
+
     // Computed methods
     public int getXPGained() {
         if (levelCompleted == 0) return 0;

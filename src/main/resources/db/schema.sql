@@ -75,6 +75,9 @@ CREATE TABLE answers (
     level_completed INT DEFAULT 0,
     notes TEXT,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_answer_text TEXT,
+    ai_score INT,
+    ai_feedback TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (question_id) REFERENCES questions(id)
 );
